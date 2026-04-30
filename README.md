@@ -12,8 +12,9 @@ Terminal-based/terminal-local file storage system with user accounts, role-based
   - `editor` — can upload files and read any file
   - `viewer` — can read files but cannot upload
 - **File upload** — drop a file in your Desktop or Downloads folder, then type the filename. The system finds it, encrypts it, and stores a copy
-- **Encryption at rest** — every uploaded file is encrypted on disk using XOR encryption with a shared 2-digit key. Without the key the file contents are unreadable
-- **Interactive terminal UI** — everything runs through a simple numbered menu in the terminal
+- **Encryption** — every uploaded file is encrypted with a shared 2-digit key. Without the key the file contents are unreadable and gibberish
+- **Two Factor Authentication** - every time a user logs in, they are sent an email with a code that they must type in to get into their account
+- **Interactive terminal** — everything runs through a simple numbered menu in the terminal
 
 ---
 
@@ -29,46 +30,7 @@ No external packages required
 
 Terminal-based file storage system with user accounts, role-based access control, encryption, and email login verification.
 
-Users log in, upload files, and read files from the terminal. Files are encrypted at rest on disk. If the wrong key is entered while reading a file, the output appears as gibberish.
-
----
-
-## Components
-
-- **User accounts** — sign up with a username, role, and email
-- **Roles**
-  - `admin` — can upload and read files
-  - `editor` — can upload and read files
-  - `viewer` — can read files but cannot upload
-- **File upload** — type only the filename (file should be in Desktop or Downloads)
-- **Encryption at rest** — uploaded files are encrypted with a shared 2-digit key
-- **Login verification (2FA-style)** — login requires a one-time 6-digit code sent by email
-- **Interactive terminal UI** — all functionality is in a numbered terminal menu
-
----
-
-## Setup
-
-No external Python packages are required.
-
-### Requirements
-
-- Python 3.9+
-
-### Email setup for login verification
-
-To send one-time login codes by email, set the sender account in [config.py](config.py):
-
-- `SMTP_SENDER_EMAIL`
-- `SMTP_APP_PASSWORD`
-
-Use a Gmail account with an App Password enabled.
-
-Recipients can be any email address entered at signup, and the same email can be reused across multiple users for demos.
-
----
-
-## Run
+Users log in with name and email verification code, upload files, and read files from the terminal. Files are encrypted, and if the wrong key is entered while reading a file, the output appears as gibberish
 
 From the project folder:
 
@@ -80,7 +42,7 @@ This opens the interactive terminal menu.
 
 ---
 
-## Upload flow
+## Upload
 
 1. Put the file in **Desktop** or **Downloads**
 2. Log in as `admin` or `editor`
@@ -89,7 +51,7 @@ This opens the interactive terminal menu.
 
 ---
 
-## Read flow
+## Read
 
 1. Log in as any user
 2. Enter the emailed 6-digit login code
@@ -97,10 +59,7 @@ This opens the interactive terminal menu.
 4. Choose `3) read a file (by name)`
 5. Enter the 2-digit encryption key when prompted
 
-Correct encryption key shows readable text. Wrong key shows scrambled output.
-
-Encryption key is set in [crypto.py](crypto.py) as `ENCRYPTION_KEY`.
-
+Correct encryption key shows readable text. Wrong key shows scrambled 
 ---
 
 ## Project files
