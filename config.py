@@ -15,3 +15,7 @@ SEARCH_DIRS = [
 
 # these are the only roles we allow in this mvp
 VALID_ROLES = {"admin", "editor", "viewer"}
+
+
+SMTP_SENDER_EMAIL = "saahired@gmail.com"   
+SMTP_APP_PASSWORD  = "imux qwff vvub pajd"  

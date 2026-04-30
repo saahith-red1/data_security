@@ -62,6 +62,13 @@ def get_db():
     except Exception:
         pass  # column already exists
 
+    # add email column to users if missing
+    try:
+        db.execute("alter table users add column email text")
+        db.commit()
+    except Exception:
+        pass  # column already exists
+
     db.commit()
     return db
 

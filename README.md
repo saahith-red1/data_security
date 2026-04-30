@@ -23,69 +23,94 @@ No external packages required
 
 ---
 
-## How to Run
+## Run
 
-From inside the project folder:
+# Data Security — File Storage System
+
+Terminal-based file storage system with user accounts, role-based access control, encryption, and email login verification.
+
+Users log in, upload files, and read files from the terminal. Files are encrypted at rest on disk. If the wrong key is entered while reading a file, the output appears as gibberish.
+
+---
+
+## Components
+
+- **User accounts** — sign up with a username, role, and email
+- **Roles**
+  - `admin` — can upload and read files
+  - `editor` — can upload and read files
+  - `viewer` — can read files but cannot upload
+- **File upload** — type only the filename (file should be in Desktop or Downloads)
+- **Encryption at rest** — uploaded files are encrypted with a shared 2-digit key
+- **Login verification (2FA-style)** — login requires a one-time 6-digit code sent by email
+- **Interactive terminal UI** — all functionality is in a numbered terminal menu
+
+---
+
+## Setup
+
+No external Python packages are required.
+
+### Requirements
+
+- Python 3.9+
+
+### Email setup for login verification
+
+To send one-time login codes by email, set the sender account in [config.py](config.py):
+
+- `SMTP_SENDER_EMAIL`
+- `SMTP_APP_PASSWORD`
+
+Use a Gmail account with an App Password enabled.
+
+Recipients can be any email address entered at signup, and the same email can be reused across multiple users for demos.
+
+---
+
+## Run
+
+From the project folder:
 
 ```bash
 python3 store.py
 ```
 
-This opens the interactive menu. From there you can sign up, log in, upload files, and read files.
+This opens the interactive terminal menu.
 
 ---
 
-## How to Upload a File
+## Upload flow
 
-1. Put the file you want to upload in your **Desktop** or **Downloads** folder
-2. Log in as an `admin` or `editor` user
-3. Choose option `1) upload file`
-4. Type just the filename, like `report.txt` — no full path needed
+1. Put the file in **Desktop** or **Downloads**
+2. Log in as `admin` or `editor`
+3. Choose `1) upload file`
+4. Enter the filename (example: `report.txt`)
 
 ---
 
-## How to Read a File
+## Read flow
 
 1. Log in as any user
-2. Choose option `2) list files i can see` to see what's stored
-3. Choose option `3) read a file (by name)` and type the filename
-4. Enter the encryption key when prompted — the key is a 2-digit number
-5. Correct key → readable text. Wrong key → scrambled output
+2. Enter the emailed 6-digit login code
+3. Choose `2) list files i can see`
+4. Choose `3) read a file (by name)`
+5. Enter the 2-digit encryption key when prompted
 
-**The encryption key is: `42`** (set in `crypto.py` under `ENCRYPTION_KEY`)
+Correct encryption key shows readable text. Wrong key shows scrambled output.
 
----
-
-## File Structure
-
-```
-store.py      — entry point, run this to start the app
-config.py     — constants (storage folder, encryption key location, valid roles)
-db.py         — database setup and table creation
-users.py      — user and role management
-files.py      — file upload, encryption wiring, and file reading
-crypto.py     — XOR encryption implementation
-files/        — where uploaded (encrypted) files are stored on disk
-store.db      — SQLite database tracking users, roles, and file metadata
-```
+Encryption key is set in [crypto.py](crypto.py) as `ENCRYPTION_KEY`.
 
 ---
 
-## Encryption
+## Project files
 
-Files are encrypted using XOR encryption, implemented from scratch in `crypto.py`. The idea works like this: a number (the key) is used to seed Python's built-in random number generator, which produces a deterministic stream of bytes. Each byte of the file is XOR'd with the corresponding byte from that stream. To decrypt, you do the exact same operation — XOR is its own inverse, so running it again with the same key recovers the original file.
-
-The encryption key concept and overall approach were discussed with an AI used as an external contributor, but the actual implementation in `crypto.py` was written by hand. The AI was also used as an external contributor to help set up the `store.db` SQLite schema.
-
----
-
-## Command Line (Alternative to Interactive Mode)
-
-You can also run individual commands directly:
-
-```bash
-python3 store.py signup <username> <role>        # create a user
-python3 store.py users-list                      # list all users and roles
-python3 store.py upload <filepath> <username>    # upload a file
-python3 store.py files-list                      # list all stored files
-```
+- [store.py](store.py) — main entry point
+- [config.py](config.py) — constants and SMTP settings
+- [db.py](db.py) — SQLite setup and table creation
+- [users.py](users.py) — users, roles, and user emails
+- [files.py](files.py) — upload, listing, and read behavior
+- [crypto.py](crypto.py) — XOR encryption/decryption
+- [auth.py](auth.py) — email code generation + verification
+- [files/](files/) — encrypted file storage
+- `store.db` — SQLite database

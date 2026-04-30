@@ -10,6 +10,18 @@ def user_exists(db, username):
     return row is not None
 
 
+def get_user_email(db, username):
+    """Return the stored email for a user, or None if not set."""
+    row = db.execute("select email from users where username = ?", (username,)).fetchone()
+    return row["email"] if row else None
+
+
+def set_user_email(db, username, email):
+    """Save or update the email for a user."""
+    db.execute("update users set email = ? where username = ?", (email, username))
+    db.commit()
+
+
 def get_user_roles(db, username):
     rows = db.execute(
         """
@@ -53,14 +65,14 @@ def add_user(username):
         db.close()
 
 
-def add_user_with_role(username, role_name):
+def add_user_with_role(username, role_name, email=None):
     if role_name not in VALID_ROLES:
         print("invalid role (use admin/editor/viewer)")
         return
 
     db = get_db()
     try:
-        db.execute("insert into users (username) values (?)", (username,))
+        db.execute("insert into users (username, email) values (?, ?)", (username, email))
         db.commit()
     except Exception:
         print("that username already exists")

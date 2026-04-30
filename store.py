@@ -1,5 +1,6 @@
 import sys
 
+from auth import run_2fa
 from db import ensure_dirs, seed_default_roles, get_db
 from users import (
     add_user,
@@ -9,6 +10,8 @@ from users import (
     list_users_and_roles,
     get_user_roles,
     user_exists,
+    get_user_email,
+    set_user_email,
 )
 from files import (
     upload_file,
@@ -36,21 +39,40 @@ def interactive_app():
             if choice == "1":
                 username = input("new username: ").strip()
                 role = input("role (admin/editor/viewer): ").strip().lower()
+                email = input("your email (for login codes): ").strip()
                 if not username:
                     print("username cannot be empty")
                     continue
-                add_user_with_role(username, role)
+                if not email or "@" not in email:
+                    print("please enter a valid email")
+                    continue
+                add_user_with_role(username, role, email)
 
             elif choice == "2":
                 username = input("username: ").strip()
                 db = get_db()
                 exists = user_exists(db, username)
-                db.close()
                 if not exists:
+                    db.close()
                     print("user not found, signup first")
                 else:
-                    current_user = username
-                    print(f"logged in as {current_user}")
+                    email = get_user_email(db, username)
+                    # if existing user has no email on file, ask now
+                    if not email:
+                        email = input("no email on file — enter your email: ").strip()
+                        if "@" in email:
+                            set_user_email(db, username, email)
+                        else:
+                            db.close()
+                            print("invalid email, login cancelled")
+                            continue
+                    db.close()
+                    # send 2FA code
+                    if run_2fa(email):
+                        current_user = username
+                        print(f"logged in as {current_user}")
+                    else:
+                        print("login failed")
 
             elif choice == "3":
                 print("bye")
