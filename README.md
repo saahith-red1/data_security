@@ -62,6 +62,15 @@ This opens the interactive terminal menu.
 Correct encryption key shows readable text. Wrong key shows scrambled 
 ---
 
+## AI
+
+I used AI as a reference while setting up the SQLite database (`db.py`). 
+SQLite and database design were new to me, and so I used AI to understand how to 
+structure tables, write the schema, and handle stuff like foreign keys and 
+migrations. 
+
+All other code was written only by me.
+
 ## Project files
 
 - [store.py](store.py) — main entry point
